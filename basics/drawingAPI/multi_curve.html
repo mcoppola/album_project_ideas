@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<meta charset = "utf-8">
+  	<title>multi curve</title>
+  	<link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+  	<canvas id="canvas" width="400" height="400"></canvas>
+  	<script src="utils.js"></script>
+  	<script>
+  		window.onload = function () {
+        
+  			var canvas = document.getElementById('canvas'),
+  				  context = canvas.getContext('2d'),
+            mouse = utils.captureMouse(canvas),
+            points = [],
+            numPoints = 0;
+
+        canvas.addEventListener('mousedown', function() {
+          points.push({
+            x: mouse.x,
+            y: mouse.y
+          });
+
+          numPoints ++;
+
+          //loop through each successive pair
+          if (numPoints > 1){
+            console.log(numPoints)
+            context.beginPath();
+            context.moveTo(points[0].x, points[1].y);
+
+            for (i = 0; i < numPoints -1 ; i +=2) {
+              context.quadraticCurveTo(points[i].x, points[i].y, points[i+1].x, points[i+1].y);
+            }
+            context.stroke();
+          }
+
+        }, false);         
+  		};
+  		</script>
+  </body>
+  </html>
