@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset = "utf-8">
+  	<title>road 1</title>
+  	<link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+  	<canvas id='canvas' width="450" height="400"></canvas>
+  	<script src="utils.js"></script>
+  	<script src="road.js"></script>
+  	<script>
+  		window.onload = function () {
+  			var canvas = document.getElementById('canvas'),
+  			context = canvas.getContext('2d'),
+        delay = 100;
+  			road = new Road();
+        road2 = new Road();
+        road2.x = -delay;
+        road2.y = -delay;
+        road3 = new Road();
+        road3.x = -delay*2;
+        road3.y = -delay*2;
+        frame = 0;
+
+  		
+
+  		(function drawFrame () {
+  			utils.getAnimationFrame();
+  			window.requestAnimationFrame(drawFrame, canvas);
+  			context.clearRect(0, 0, canvas.width, canvas.height);
+        frame += 1;
+  			road.x += 1;
+  			road.y += 1;
+        road2.x += 1;
+        road2.y += 1;
+        road3.x += 1;
+        road3.y += 1;
+
+  			road.draw(context, frame, canvas.width, canvas.height);
+        road2.draw(context, frame - delay, canvas.width, canvas.height);
+        road3.draw(context, frame - delay*2, canvas.width, canvas.height);
+
+
+  		}());
+  	};
+  	</script>
+  </body>
+  </html>
