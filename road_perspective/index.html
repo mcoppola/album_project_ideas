@@ -1,65 +1,50 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset = "utf-8">
-  	<title>road 1</title>
-  	<link rel="stylesheet" href="style.css">
+  <meta charset = "utf-8">
+    <title>road 1</title>
+    <link rel="stylesheet" href="style.css">
   </head>
   <body>
-  	<canvas id='canvas' width="600" height="600"></canvas>
-  	<script src="utils.js"></script>
-  	<script src="road.js"></script>
-  	<script>
-  		window.onload = function () {
-  			var canvas = document.getElementById('canvas'),
+
+    <canvas id='canvas' width="600" height="600"></canvas>
+    <script src="utils.js"></script>
+    <script src="road.js"></script>
+    <script>
+      window.onload = function () {
+        var canvas = document.getElementById('canvas'),
         
-  			context = canvas.getContext('2d'),
+        context = canvas.getContext('2d'),
         delay = 100;
-  			road = new Road();
+        road = new Road();
         frame = 0;
         snowFlakes = [];
 
         mouse = utils.captureMouse(canvas);
         canvas.addEventListener('mousedown', function() {
-          snowFlakes.push(new SnowFlake(mouse.x, mouse.y))
+          snowFlakes.push(new SnowFlake(mouse.x, mouse.y, canvas.width, canvas.height))
         }, false);
 
-  		
+        touch = utils.captureTouch(canvas);
+        if (touch.isPressed) {
+          snowFlakes.push(new SnowFlake(touch.x, touch.y, canvas.width, canvas.height))
+        }
+      
 
-  		(function drawFrame () {
-  			utils.getAnimationFrame();
-  			window.requestAnimationFrame(drawFrame, canvas);
-  			context.clearRect(0, 0, canvas.width, canvas.height);
+      (function drawFrame () {
+        utils.getAnimationFrame();
+        window.requestAnimationFrame(drawFrame, canvas);
+        context.clearRect(0, 0, canvas.width, canvas.height);
         frame += 1;
-  			road.x += 1;
-  			road.y += 1;
+        road.x += 1;
+        road.y += 1;
 
-  			road.play(context, frame, delay, canvas.width, canvas.height);
+        road.play(context, frame, canvas.width, canvas.height);
         for (var i = 0; i < snowFlakes.length; i++) {
-          
-          /*var z = (Math.max(Math.abs((canvas.width/2 -snowFlakes[i].x)), Math.abs((canvas.height/2) - s nowFlakes[i].y)))/Math.max(canvas.height, canvas.width);*/
-          
-          /*dist = (canvas.width/2+canvas.height/2)/(Math.abs(snowFlakes[i].x - canvas.width/2) + Math.abs(snowFlakes[i].y - canvas.height));
+                   
           snowFlakes[i].z -= 0.005;
-          console.log(dist);*/
-
-          /*rate = (Math.abs(snowFlakes[i].x - canvas.width) + (Math.abs(snowFlakes[i].y - canvas.height)))/(canvas.width+canvas.height);*/
-          rate = snowFlakes[i].z*2;
-
           snowFlakes[i].draw(context, frame, canvas.width, canvas.height);
 
-          if(snowFlakes[i].x > canvas.width/2) {
-            snowFlakes[i].x -= 1*rate;
-          }
-          else if (snowFlakes[i].x < canvas.width/2) {
-            snowFlakes[i].x += 1*rate;
-          }
-          if(snowFlakes[i].y > canvas.height/2) {
-            snowFlakes[i].y -= 1*rate;
-          }
-          else if (snowFlakes[i].y < canvas.height/2) {
-            snowFlakes[i].y += 1*rate;
-          }
           if(snowFlakes[i].z < 0) {
             snowFlakes.splice(i, 1);
           }
@@ -69,8 +54,8 @@
       
 
 
-  		}());
-  	};
-  	</script>
+      }());
+    };
+    </script>
   </body>
   </html>
