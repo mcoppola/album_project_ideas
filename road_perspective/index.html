@@ -25,6 +25,7 @@
           snowFlakes.push(new SnowFlake(mouse.x, mouse.y, canvas.width, canvas.height))
         }, false);
 
+
         touch = utils.captureTouch(canvas);
         if (touch.isPressed) {
           snowFlakes.push(new SnowFlake(touch.x, touch.y, canvas.width, canvas.height))
@@ -40,6 +41,10 @@
         road.y += 1;
 
         road.play(context, frame, canvas.width, canvas.height);
+        if(frame%20 == 0) {
+            snowFlakes.push(new SnowFlake(Math.random()*canvas.width, Math.random()*canvas.height, canvas.width, canvas.height));
+        }
+
         for (var i = 0; i < snowFlakes.length; i++) {
                    
           snowFlakes[i].z -= 0.005;
@@ -49,6 +54,7 @@
             snowFlakes.splice(i, 1);
           }
           
+
 
         }
       
