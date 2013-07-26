@@ -1,41 +1,47 @@
-function Road (lineWidth, color) {
-	if (lineWidth === undefined) { lineWidth = 2;}
-	if (color === undefined) { color = "#000000";}
-	this.segments = 4;
-	this.segmentLength = 80;
+function Room (context, width, height) {
 	this.x = 0;
 	this.y = 0;
-	this.color = color;
-	this.lineWidth = lineWidth;
+	this.frame = 0;
+	this.context = context;
+	this.width = width;
+	this.height = height;
+	this.color = "#000000";
+	this.colorChange = "#000000";
+	this.oldColorChange = "#000000";
+	this.playing = false;
+	this.paused = false;
+	this.lineWidth = 2;
 	this.areaLines = [];
 	this.lineCount = 20;
 	this.delay = 100;
+	this.segmentLength = 80;
 
 }
-Road.prototype.play = function (context, frame, width, height) {
+Room.prototype.play = function () {
 
-	for(var i = 0; i < this.lineCount; i++) {
-		this.areaLines[i] = new AreaLine(this.x - (i*this.delay), this.y - (i*this.delay));
-		this.areaLines[i].draw(context, frame - (i*this.delay), width, height, i);
+	for(var i = 1; i < this.lineCount; i++) {
+		this.areaLines[i] = new AreaLine(this, this.x - (i*this.delay), this.y - (i*this.delay));
+		this.areaLines[i].draw(this.context, this.frame - (i*this.delay), this.width, this.height, i);
 	}
 	
 }
 
-function AreaLine (x, y) {
+function AreaLine (road, x, y) {
+	this.road = road;
 	this.x = x;
 	this.y = y;
 	this.z = 1;
 	this.color = "#000000";
+	this.blacks = ["#000000", "#191919", "#333333", "#4D4D4D", "#666666", "#898989", "#999999", "#B2B2B2", "#CCCCCC", "#E6E6E6", "#FFFFFF"];
 	this.lineWidth = 2;
 }
 AreaLine.prototype.draw = function (context, frame, width, height, i) {
+
 	context.save();
-	//context.translate(this.x, this.y);	
-	context.lineWidth = this.lineWidth;
-	context.fillStyle = this.color;
 	context.beginPath();
+	context.globalAlpha = (width/2 - this.x + 10)/(width/2);
 	
-	seg = 80 - frame/3.6
+	seg = this.road.segmentLength - frame/3.6
 	if (seg < 0) {
 		seg = 0;
 	}
@@ -53,8 +59,13 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 			context.lineTo(this.x + seg, height - this.y - seg);
 			context.moveTo(this.x + seg, height - this.y - seg);
 			context.lineTo(this.x + seg, this.y + seg);
+			
+			context.stroke();
+			
 		}
 	}
+
+	context.beginPath();
 
 
 	//top left
@@ -77,19 +88,19 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 	if (i % 300 == 0) {
 		context.moveTo
 	}
-
+	//context.strokeStyle = this.blacks[3];
 	context.stroke();
 	context.restore();
 }
 
 function SnowFlake (x, y, width, height) {
-	//colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#00FFFF",
-	//	"#FF00FF", "#C0C0C0"];
+	colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#00FFFF",
+		"#FF00FF", "#C0C0C0"];
 	this.x = x;
 	this.y = y;
 	this.z = 1;
 	this.delay = 100;
-	//this.color = colors[Math.floor(Math.random()*colors.length)];
+	this.color = colors[Math.floor(Math.random()*colors.length)];
 	this.lineWidth = 3;
 
 
@@ -127,12 +138,11 @@ function SnowFlake (x, y, width, height) {
 SnowFlake.prototype.draw = function (context, frame, width, height) {
 	
 	context.save();
-/*	context.translate(this.x, this.y);
-	context.rotate(Math.PI*z);*/
 	context.lineWidth = this.lineWidth;
 	context.beginPath();
+	context.shadowBlur = 1;
+	context.shadowColor = this.color;
 	
-
 	context.moveTo(this.x, this.y);
 	context.lineTo(this.x + 8*this.z, this.y + 8*this.z);
 	context.moveTo(this.x, this.y);
@@ -142,17 +152,17 @@ SnowFlake.prototype.draw = function (context, frame, width, height) {
 	context.moveTo(this.x, this.y);
 	context.lineTo(this.x - 8*this.z, this.y - 8*this.z);
 
-
-
 	//context.strokeStyle = this.color;
-
 	context.stroke();
-
 	context.restore();
 
-	for(var i = 0; i <this.trails.length; i++) {
+	
+
+	/*for(var i = 0; i <this.trails.length; i++) {
 		this.trails[i].draw(context, frame, width, height);
-	}
+	}*/
+
+	
 
 
 	rate = Math.max(this.z, 0.3)*this.rate;
@@ -217,9 +227,7 @@ SnowFlakeTrails.prototype.draw = function (context, frame, width, height) {
 
 
 	context.strokeStyle = this.color;
-
 	context.stroke();
-
 	context.restore();
 
 	rate = Math.max(this.z, 0.3)*this.rate;
