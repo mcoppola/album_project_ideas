@@ -14,41 +14,21 @@
     <script src="road.js"></script>
     <script>
       window.onload = function () {
-        var limitLoop = function (fn, fps) {
-          // Use var then = Date.now(); if you
-          // don't care about targetting < IE9
-          var then = new Date().getTime();
-           
-          // custom fps, otherwise fallback to 60
-          fps = fps || 60;
-          var interval = 1000 / fps;
-          return (function loop(time){
-          requestAnimationFrame(loop);
-          // again, Date.now() if it's available
-          var now = new Date().getTime();
-          var delta = now - then;
-          if (delta > interval) {
-            // Update time
-            // now - (delta % interval) is an improvement over just
-            // using then = now, which can end up lowering overall fps
-            then = now - (delta % interval);
-            // call the fn
-            fn();
-          }
-          }(0));
-        };
 
         var canvas = document.getElementById('canvas'),
         lastCalledTime,
         fps,
         context = canvas.getContext('2d'),
+        alpha = 1;
         delay = 100;
         room = new Room(context, canvas.width, canvas.height);
         frame = 0;
         snowFlakes = [];
 
+        context.font = "12px sans-serif";
+        context.fillText("[endless room demo]", canvas.width/2 - 60, canvas.height/2 - 20);
         context.font = "bold 12px sans-serif";
-        context.fillText("play", canvas.width/2, canvas.height/2);
+        context.fillText("play", canvas.width/2 - 10, canvas.height/2);
         
         mouse = utils.captureMouse(canvas);
 
@@ -114,7 +94,20 @@
         }*/
 
         if(room.playing) {
+
           context.clearRect(0, 0, canvas.width, canvas.height);
+
+          //button fade
+          if (alpha > 0) {
+            context.fillStyle = "rgba(0, 0, 0, " + alpha + ")";
+            context.font = "12px sans-serif";
+            context.fillText("[endless room demo]", canvas.width/2 - 60, canvas.height/2 - 20);
+            context.font = "bold 12px sans-serif";
+            context.fillText("play", canvas.width/2 - 10, canvas.height/2);
+            alpha = alpha - 0.005;
+        }
+
+          context.fillStyle = "#000000";
 
           context.font = "bold 12px sans-serif";
           context.fillText("II", canvas.width/2, canvas.height - 4);
@@ -125,6 +118,7 @@
         
 
         room.play();
+        //RANDOM
         /*if(frame%20 == 0) {
             snowFlakes.push(new SnowFlake(Math.random()*canvas.width, Math.random()*canvas.height, canvas.width, canvas.height));
         }*/
@@ -146,8 +140,6 @@
 
 
       }());
-
-    limitLoop(drawFrame, 3);
     };
     </script>
     <p id='fps'>n</p>
