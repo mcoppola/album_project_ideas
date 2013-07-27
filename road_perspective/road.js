@@ -3,8 +3,8 @@ function Room (context, width, height) {
 	this.y = 0;
 	this.z = 1;
 	this.frame = 0;
-	this.shiftX = 1.0;
-	this.shiftY = 1.0;
+	this.shiftX = 0.1; //staring conditions
+	this.shiftY = 1.6; //
 	this.shiftFactor = 20;
 	this.context = context;
 	this.width = width;
@@ -14,7 +14,7 @@ function Room (context, width, height) {
 	this.oldColorChange = "#000000";
 	this.playing = false;
 	this.paused = false;
-	this.lineWidth = 2;
+	this.lineWidth = 1;
 	this.areaLines = [];
 	this.lineCount = 50;
 	this.delay = 100;
@@ -48,6 +48,7 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 	context.save();
 	context.beginPath();
 	context.globalAlpha = (width/2 - this.x + 10)/(width/2);
+	context.lineWidth = this.lineWidth;
 	
 	seg = this.room.segmentLength - (frame)/3.6;
 	if (seg < 0) {
@@ -56,7 +57,7 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 
 	//boxes
 	if (i % 2 == 0) {
-		if (width/2 > this.x) {
+		if (width/2 > this.x + 2) {
 /*			context.shadowBlur = 15;
 			context.shadowColor = this.color;*/
 			//top
@@ -78,7 +79,6 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 	}
 
 	context.beginPath();
-
 
 	//top left
 	context.moveTo(this.x*this.shiftXL, this.y*this.shiftYT);
@@ -104,12 +104,14 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 	context.stroke();
 	context.restore();}
 
-function SnowFlake (x, y, width, height) {
+function SnowFlake (x, y, width, height, size) {
+	if (size === undefined) { size = 4; }
 	colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#00FFFF",
 		"#FF00FF", "#C0C0C0"];
 	this.x = x;
 	this.y = y;
 	this.z = 1;
+	this.size = size;
 	this.delay = 100;
 	this.color = colors[Math.floor(Math.random()*colors.length)];
 	this.lineWidth = 3;
@@ -155,19 +157,18 @@ SnowFlake.prototype.draw = function (context, frame, width, height, shiftX, shif
 	context.shadowColor = this.color;
 	
 	context.moveTo(this.x, this.y);
-	context.lineTo(this.x + 8*this.z, this.y + 8*this.z);
+	context.lineTo(this.x + this.size*this.z, this.y + this.size*this.z);
 	context.moveTo(this.x, this.y);
-	context.lineTo(this.x - 8*this.z, this.y + 8*this.z);
+	context.lineTo(this.x - this.size*this.z, this.y + this.size*this.z);
 	context.moveTo(this.x, this.y);
-	context.lineTo(this.x + 8*this.z, this.y - 8*this.z);
+	context.lineTo(this.x + this.size*this.z, this.y - this.size*this.z);
 	context.moveTo(this.x, this.y);
-	context.lineTo(this.x - 8*this.z, this.y - 8*this.z);
+	context.lineTo(this.x - this.size*this.z, this.y - this.size*this.z);
 
 	//context.strokeStyle = this.color;
 	context.stroke();
 	context.restore();
 
-	
 
 	/*for(var i = 0; i <this.trails.length; i++) {
 		this.trails[i].draw(context, frame, width, height);
@@ -235,7 +236,6 @@ SnowFlakeTrails.prototype.draw = function (context, frame, width, height) {
 	context.lineWidth = this.lineWidth;
 	context.beginPath();
 	
-
 	context.moveTo(this.x, this.y);
 	context.lineTo(this.x + 4*this.z, this.y + 4*this.z);
 	context.moveTo(this.x, this.y);
@@ -244,8 +244,6 @@ SnowFlakeTrails.prototype.draw = function (context, frame, width, height) {
 	context.lineTo(this.x + 4*this.z, this.y - 4*this.z);
 	context.moveTo(this.x, this.y);
 	context.lineTo(this.x - 4*this.z, this.y - 4*this.z);
-
-
 
 	context.strokeStyle = this.color;
 	context.stroke();
