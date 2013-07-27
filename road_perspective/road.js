@@ -1,7 +1,11 @@
 function Room (context, width, height) {
 	this.x = 0;
 	this.y = 0;
+	this.z = 1;
 	this.frame = 0;
+	this.shiftX = 1.0;
+	this.shiftY = 1.0;
+	this.shiftFactor = 20;
 	this.context = context;
 	this.width = width;
 	this.height = height;
@@ -12,7 +16,7 @@ function Room (context, width, height) {
 	this.paused = false;
 	this.lineWidth = 2;
 	this.areaLines = [];
-	this.lineCount = 20;
+	this.lineCount = 50;
 	this.delay = 100;
 	this.segmentLength = 80;
 
@@ -26,11 +30,15 @@ Room.prototype.play = function () {
 	
 }
 
-function AreaLine (road, x, y) {
-	this.road = road;
+function AreaLine (room, x, y) {
+	this.room = room;
 	this.x = x;
 	this.y = y;
-	this.z = 1;
+	this.shiftXL = room.shiftX;
+	this.shiftXR = 1 + (1 - room.shiftX);
+	this.shiftYT = room.shiftY;
+	this.shiftYB = 1 + (1 - room.shiftY);
+	this.z = room.z;
 	this.color = "#000000";
 	this.blacks = ["#000000", "#191919", "#333333", "#4D4D4D", "#666666", "#898989", "#999999", "#B2B2B2", "#CCCCCC", "#E6E6E6", "#FFFFFF"];
 	this.lineWidth = 2;
@@ -41,7 +49,7 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 	context.beginPath();
 	context.globalAlpha = (width/2 - this.x + 10)/(width/2);
 	
-	seg = this.road.segmentLength - frame/3.6
+	seg = this.room.segmentLength - (frame)/3.6;
 	if (seg < 0) {
 		seg = 0;
 	}
@@ -51,14 +59,18 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 		if (width/2 > this.x) {
 /*			context.shadowBlur = 15;
 			context.shadowColor = this.color;*/
-			context.moveTo(this.x + seg, this.y + seg);
-			context.lineTo(width - this.x - seg, this.y + seg);
-			context.moveTo(width - this.x - seg, this.y + seg);
-			context.lineTo(width - this.x - seg, height - this.y - seg);
-			context.moveTo(width - this.x - seg, height - this.y - seg);
-			context.lineTo(this.x + seg, height - this.y - seg);
-			context.moveTo(this.x + seg, height - this.y - seg);
-			context.lineTo(this.x + seg, this.y + seg);
+			//top
+			context.moveTo(this.x*this.shiftXL + seg*this.shiftXL, this.y*this.shiftYT + seg*this.shiftYT);
+			context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, this.y*this.shiftYT + seg*this.shiftYT);
+			//right
+			context.moveTo(width - this.x*this.shiftXR - seg*this.shiftXR, this.y*this.shiftYT + seg*this.shiftYT);
+			context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, height - this.y*this.shiftYB - seg*this.shiftYB);
+			//bottom
+			context.moveTo(width - this.x*this.shiftXR - seg*this.shiftXR, height - this.y*this.shiftYB - seg*this.shiftYB);
+			context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, height - this.y*this.shiftYB - seg*this.shiftYB);
+			//left
+			context.moveTo(this.x*this.shiftXL + seg*this.shiftXL, height - this.y*this.shiftYB - seg*this.shiftYB);
+			context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, this.y*this.shiftYT + seg*this.shiftYT);
 			
 			context.stroke();
 			
@@ -69,20 +81,20 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 
 
 	//top left
-	context.moveTo(this.x, this.y);
-	context.lineTo(this.x + seg, this.y + seg);
+	context.moveTo(this.x*this.shiftXL, this.y*this.shiftYT);
+	context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, this.y*this.shiftYT + seg*this.shiftYT);
 	
 	//top right
-	context.moveTo(width - this.x, this.y);
-	context.lineTo(width - this.x - seg, this.y + seg);
+	context.moveTo(width - this.x*this.shiftXR, this.y*this.shiftYT);
+	context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, this.y*this.shiftYT + seg*this.shiftYT);
 
 	//bottom left
-	context.moveTo(this.x, height - this.y);
-	context.lineTo(this.x + seg, height  - this.y - seg);
+	context.moveTo(this.x*this.shiftXL, height - this.y*this.shiftYB);
+	context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, height  - this.y*this.shiftYB - seg*this.shiftYB);
 
 	//bottom right
-	context.moveTo(width - this.x, height - this.y);
-	context.lineTo(width - this.x - seg, height - this.y - seg);
+	context.moveTo(width - this.x*this.shiftXR, height - this.y*this.shiftYB);
+	context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, height - this.y*this.shiftYB - seg*this.shiftYB);
 
 	//snowflake
 	if (i % 300 == 0) {
@@ -90,8 +102,7 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 	}
 	//context.strokeStyle = this.blacks[3];
 	context.stroke();
-	context.restore();
-}
+	context.restore();}
 
 function SnowFlake (x, y, width, height) {
 	colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#00FFFF",
@@ -104,7 +115,7 @@ function SnowFlake (x, y, width, height) {
 	this.lineWidth = 3;
 
 
-	this.dx = Math.abs(x - width/2);
+	this.dx = Math.abs(x - (width/2));
 	this.dxu = x - width/2;
 	this.dy = Math.abs(y - height/2);
 	this.dyu = y - height/2;
@@ -135,7 +146,7 @@ function SnowFlake (x, y, width, height) {
 	}
 
 }
-SnowFlake.prototype.draw = function (context, frame, width, height) {
+SnowFlake.prototype.draw = function (context, frame, width, height, shiftX, shiftY) {
 	
 	context.save();
 	context.lineWidth = this.lineWidth;
@@ -163,20 +174,30 @@ SnowFlake.prototype.draw = function (context, frame, width, height) {
 	}*/
 
 	
-
+	this.dx = Math.abs(this.x - (width/2)*shiftX);
+	this.dy = Math.abs(this.y - (height/2)*shiftY);
+	this.rate = (Math.sqrt(Math.pow(this.dx, 2)+Math.pow(this.dy, 2))/Math.sqrt(Math.pow((width/2)*shiftX, 2)+Math.pow((height/2)*shiftY, 2)))*3;
+	if (this.dx > this.dy){
+		this.xScale = this.dx/this.dy;
+		this.yScale = 1;
+	}
+	else {
+		this.xScale = 1;
+		this.yScale = this.dy/this.dx;
+	}
 
 	rate = Math.max(this.z, 0.3)*this.rate;
 
-	if(this.x > width/2) {
+	if(this.x > (width/2)*shiftX) {
 		this.x -= 1/this.yScale*rate;
 	}
-	else if (this.x < width/2) {
+	else if (this.x < (width/2)*shiftX) {
 		this.x += 1/this.yScale*rate;
 	}
-	if(this.y > height/2) {
+	if(this.y > (height/2)*shiftY) {
 		this.y -= 1/this.xScale*rate;
 	}
-	else if (this.y < height/2) {
+	else if (this.y < (height/2)*shiftY) {
 		this.y += 1/this.xScale*rate;
 	}
 
