@@ -60,3 +60,44 @@ utils.getAnimationFrame = function () {
 										});
 	}
 };
+
+utils.setCanvas = function (window) {
+	window.addEventListener(
+		'load',
+		function () {
+			var canvas = document.getElementsByTagName('canvas')[0];
+
+			fullscreenify(canvas);
+		},
+		false
+		);
+
+	function fullscreenify(canvas) {
+		var style = canvas.getAttribute('style') || '';
+		window.addEventListener('resize', function () {resize(canvas);}, false);
+
+		resize(canvas);
+
+		function resize(canvas) {
+/*			var scale = {x: 1, y: 1};
+			scale.x = (window.innerWidth - 10) / canvas.width;
+			scale.y = (window.innerHeight - 10) / canvas.height;
+			if (scale.x < 1 || scale.y < 1) {
+				scale = '1, 1';
+			} else if (scale.x < scale.y) {
+				scale = scale.x + ', ' + scale.x;
+			} else {
+				scale = scale.y + ', ' + scale.y;
+			}*/
+			if(window.innerWidth > window.innerHeight) {
+				canvas.width  = Math.min(600, window.innerHeight - 60);
+				canvas.height = Math.min(600, window.innerHeight - 60);
+			}
+			else {
+				canvas.width = Math.min(600, window.innerWidth - 60);
+				canvas.height = Math.min(600, window.innerWidth - 60);
+			}
+
+		}
+	}
+}

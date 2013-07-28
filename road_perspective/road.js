@@ -3,7 +3,7 @@ function Room (context, width, height) {
 	this.y = 0;
 	this.z = 1;
 	this.frame = 0;
-	this.shiftX = 0.1; //staring conditions
+	this.shiftX = 0.2; //staring conditions
 	this.shiftY = 1.6; //
 	this.shiftFactor = 20;
 	this.context = context;
@@ -17,17 +17,76 @@ function Room (context, width, height) {
 	this.lineWidth = 1;
 	this.areaLines = [];
 	this.lineCount = 50;
-	this.delay = 100;
-	this.segmentLength = 80;
+	this.delay = 200;
+	this.segmentLength = width/8.5;
 
 }
 Room.prototype.play = function () {
 
+//GRADIENT
+	//top
+	var grd=this.context.createLinearGradient(0,0,0,(this.height/2)*this.shiftY);
+	grd.addColorStop(.8,"white");
+	grd.addColorStop(0,"#333");
+	grd.addColorStop(.6, "#EDEDED");
+	var top=[0,0, this.width,0, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY];
+	this.context.fillStyle = grd;
+	this.context.beginPath();
+	this.context.moveTo(top[0], top[1]);
+	for( item=2 ; item < top.length-1 ; item+=2 ){this.context.lineTo( top[item] , top[item+1] )}
+	this.context.closePath();
+	this.context.fill();
+
+	//left
+	grd=this.context.createLinearGradient(0,(this.height/2)*this.shiftY,(this.width/2)*this.shiftX,(this.height/2)*this.shiftY);
+	grd.addColorStop(.8,"white");
+	grd.addColorStop(0,"#333");
+	grd.addColorStop(.6, "#EDEDED");
+	this.context.fillStyle = grd;
+	this.context.beginPath();
+	var left=[0,0, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY, 0,this.height];
+	this.context.moveTo(left[0], left[1]);
+	for( item=2 ; item < left.length-1 ; item+=2 ){this.context.lineTo( left[item] , left[item+1] )}
+	this.context.closePath();
+	this.context.fill();
+
+
+	//bottom
+	var grd2=this.context.createLinearGradient(0,(this.height/2)*this.shiftY,0,this.height);
+	grd2.addColorStop(.2,"white");
+	grd2.addColorStop(1,"#333");
+	grd2.addColorStop(.4, "#EDEDED");
+	this.context.fillStyle = grd2;
+	this.context.beginPath();
+	var bottom=[0,this.height, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY, this.width,this.height];
+	this.context.moveTo(bottom[0], bottom[1]);
+	for( item=2 ; item < bottom.length-1 ; item+=2 ){this.context.lineTo( bottom[item] , bottom[item+1] )}
+	this.context.closePath();
+	this.context.fill();
+
+	//right
+	var grd3=this.context.createLinearGradient((this.width/2)*this.shiftX,0,this.width,0);
+	grd3.addColorStop(.2,"white");
+	grd3.addColorStop(1,"#333");
+	grd3.addColorStop(.4, "#EDEDED");
+	this.context.beginPath();
+	var right=[this.width,this.height, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY, this.width,0];
+	this.context.moveTo(right[0], right[1]);
+	for( item=2 ; item < right.length-1 ; item+=2 ){this.context.lineTo( right[item] , right[item+1] )}
+	this.context.closePath();
+	this.context.fillStyle = grd3;
+
+	this.context.fill();
+
+
+
+
+//AREA LINES
 	for(var i = 1; i < this.lineCount; i++) {
 		this.areaLines[i] = new AreaLine(this, this.x - (i*this.delay), this.y - (i*this.delay));
 		this.areaLines[i].draw(this.context, this.frame - (i*this.delay), this.width, this.height, i);
 	}
-	
+
 }
 
 function AreaLine (room, x, y) {
@@ -41,13 +100,13 @@ function AreaLine (room, x, y) {
 	this.z = room.z;
 	this.color = "#000000";
 	this.blacks = ["#000000", "#191919", "#333333", "#4D4D4D", "#666666", "#898989", "#999999", "#B2B2B2", "#CCCCCC", "#E6E6E6", "#FFFFFF"];
-	this.lineWidth = 2;
+	this.lineWidth = 1;
 }
 AreaLine.prototype.draw = function (context, frame, width, height, i) {
 
 	context.save();
 	context.beginPath();
-	context.globalAlpha = (width/2 - this.x + 10)/(width/2);
+	context.globalAlpha = (width/2 - (this.x + 30))/(width/2);
 	context.lineWidth = this.lineWidth;
 	
 	seg = this.room.segmentLength - (frame)/3.6;
@@ -57,7 +116,7 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 
 	//boxes
 	if (i % 2 == 0) {
-		if (width/2 > this.x + 2) {
+		if (width/2 > this.x + 30) {
 /*			context.shadowBlur = 15;
 			context.shadowColor = this.color;*/
 			//top
@@ -78,31 +137,35 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 		}
 	}
 
-	context.beginPath();
+	if(width/2 > this.x + 30) {	
+		context.beginPath();
 
-	//top left
-	context.moveTo(this.x*this.shiftXL, this.y*this.shiftYT);
-	context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, this.y*this.shiftYT + seg*this.shiftYT);
-	
-	//top right
-	context.moveTo(width - this.x*this.shiftXR, this.y*this.shiftYT);
-	context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, this.y*this.shiftYT + seg*this.shiftYT);
+		//top left
+		context.moveTo(this.x*this.shiftXL, this.y*this.shiftYT);
+		context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, this.y*this.shiftYT + seg*this.shiftYT);
+		
+		//top right
+		context.moveTo(width - this.x*this.shiftXR, this.y*this.shiftYT);
+		context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, this.y*this.shiftYT + seg*this.shiftYT);
 
-	//bottom left
-	context.moveTo(this.x*this.shiftXL, height - this.y*this.shiftYB);
-	context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, height  - this.y*this.shiftYB - seg*this.shiftYB);
+		//bottom left
+		context.moveTo(this.x*this.shiftXL, height - this.y*this.shiftYB);
+		context.lineTo(this.x*this.shiftXL + seg*this.shiftXL, height  - this.y*this.shiftYB - seg*this.shiftYB);
 
-	//bottom right
-	context.moveTo(width - this.x*this.shiftXR, height - this.y*this.shiftYB);
-	context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, height - this.y*this.shiftYB - seg*this.shiftYB);
-
+		//bottom right
+		context.moveTo(width - this.x*this.shiftXR, height - this.y*this.shiftYB);
+		context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, height - this.y*this.shiftYB - seg*this.shiftYB);
+	}
 	//snowflake
 	if (i % 300 == 0) {
 		context.moveTo
 	}
 	//context.strokeStyle = this.blacks[3];
+
 	context.stroke();
-	context.restore();}
+	context.restore();
+}
+
 
 function SnowFlake (x, y, width, height, size) {
 	if (size === undefined) { size = 4; }
