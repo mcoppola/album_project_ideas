@@ -22,7 +22,6 @@
         fps,
         context = canvas.getContext('2d'),
         alpha = 1;
-        delay = 100;
         intro = true;
         room = new Room(context, canvas.width, canvas.height);
         frame = 0;
@@ -41,7 +40,7 @@
                 context.fillText(">", canvas.width/2, canvas.height - 4);
               } 
               else {  
-                snowFlakes.push(new SnowFlake(mouse.x, mouse.y, canvas.width, canvas.height, 10));
+                snowFlakes.push(new SnowFlake(mouse.x, mouse.y, canvas.width, canvas.height, 8));
                 //room.oldColorChange = room.colorchange;
                 //room.colorChange = s.color;
 
@@ -92,6 +91,8 @@
       
 
       (function drawFrame () {
+
+        if(!room.paused) {
         utils.getAnimationFrame();
         window.requestAnimationFrame(drawFrame, canvas);
 
@@ -107,12 +108,9 @@
         if(room.frame%20 == 0) {
           document.getElementById('fps').innerHTML = 'fps: ' + fps;
         }*/
+
+
         context.clearRect(0, 0, canvas.width, canvas.height);
-
-
-          if(!intro) {context.font = "bold 12px sans-serif";
-              context.fillStyle = "#000000";
-              context.fillText("II", canvas.width/2, canvas.height - 4);}
 
           room.frame += 1;
           room.x += 1;
@@ -120,6 +118,10 @@
           room.z = room.z - 0.005;
 
           room.play();
+
+          if(!intro) {context.font = "bold 12px sans-serif";
+              context.fillStyle = "#000000";
+              context.fillText("II", canvas.width/2, canvas.height - 4);}
 
         if(intro){
           context.fillStyle = "#000000";
@@ -158,6 +160,8 @@
           }
         }
         }
+
+      }
       
 
 

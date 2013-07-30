@@ -10,12 +10,11 @@ function Room (context, width, height) {
 	this.width = width;
 	this.height = height;
 	this.color = "#000000";
-	this.colorChange = "#000000";
-	this.oldColorChange = "#000000";
 	this.playing = false;
 	this.paused = false;
 	this.lineWidth = 1;
 	this.areaLines = [];
+	this.walls = new Walls (this);
 	this.lineCount = 50;
 	this.delay = 200;
 	this.segmentLength = width/8.5;
@@ -23,63 +22,8 @@ function Room (context, width, height) {
 }
 Room.prototype.play = function () {
 
-//GRADIENT
-	//top
-	var grd=this.context.createLinearGradient(0,0,0,(this.height/2)*this.shiftY);
-	grd.addColorStop(.8,"white");
-	grd.addColorStop(0,"#333");
-	grd.addColorStop(.6, "#EDEDED");
-	var top=[0,0, this.width,0, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY];
-	this.context.fillStyle = grd;
-	this.context.beginPath();
-	this.context.moveTo(top[0], top[1]);
-	for( item=2 ; item < top.length-1 ; item+=2 ){this.context.lineTo( top[item] , top[item+1] )}
-	this.context.closePath();
-	this.context.fill();
-
-	//left
-	grd=this.context.createLinearGradient(0,(this.height/2)*this.shiftY,(this.width/2)*this.shiftX,(this.height/2)*this.shiftY);
-	grd.addColorStop(.8,"white");
-	grd.addColorStop(0,"#333");
-	grd.addColorStop(.6, "#EDEDED");
-	this.context.fillStyle = grd;
-	this.context.beginPath();
-	var left=[0,0, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY, 0,this.height];
-	this.context.moveTo(left[0], left[1]);
-	for( item=2 ; item < left.length-1 ; item+=2 ){this.context.lineTo( left[item] , left[item+1] )}
-	this.context.closePath();
-	this.context.fill();
-
-
-	//bottom
-	var grd2=this.context.createLinearGradient(0,(this.height/2)*this.shiftY,0,this.height);
-	grd2.addColorStop(.2,"white");
-	grd2.addColorStop(1,"#333");
-	grd2.addColorStop(.4, "#EDEDED");
-	this.context.fillStyle = grd2;
-	this.context.beginPath();
-	var bottom=[0,this.height, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY, this.width,this.height];
-	this.context.moveTo(bottom[0], bottom[1]);
-	for( item=2 ; item < bottom.length-1 ; item+=2 ){this.context.lineTo( bottom[item] , bottom[item+1] )}
-	this.context.closePath();
-	this.context.fill();
-
-	//right
-	var grd3=this.context.createLinearGradient((this.width/2)*this.shiftX,0,this.width,0);
-	grd3.addColorStop(.2,"white");
-	grd3.addColorStop(1,"#333");
-	grd3.addColorStop(.4, "#EDEDED");
-	this.context.beginPath();
-	var right=[this.width,this.height, (this.width/2)*this.shiftX,(this.height/2)*this.shiftY, this.width,0];
-	this.context.moveTo(right[0], right[1]);
-	for( item=2 ; item < right.length-1 ; item+=2 ){this.context.lineTo( right[item] , right[item+1] )}
-	this.context.closePath();
-	this.context.fillStyle = grd3;
-
-	this.context.fill();
-
-
-
+//draw gradient
+	this.walls.draw();
 
 //AREA LINES
 	for(var i = 1; i < this.lineCount; i++) {
@@ -99,7 +43,6 @@ function AreaLine (room, x, y) {
 	this.shiftYB = 1 + (1 - room.shiftY);
 	this.z = room.z;
 	this.color = "#000000";
-	this.blacks = ["#000000", "#191919", "#333333", "#4D4D4D", "#666666", "#898989", "#999999", "#B2B2B2", "#CCCCCC", "#E6E6E6", "#FFFFFF"];
 	this.lineWidth = 1;
 }
 AreaLine.prototype.draw = function (context, frame, width, height, i) {
@@ -156,14 +99,72 @@ AreaLine.prototype.draw = function (context, frame, width, height, i) {
 		context.moveTo(width - this.x*this.shiftXR, height - this.y*this.shiftYB);
 		context.lineTo(width - this.x*this.shiftXR - seg*this.shiftXR, height - this.y*this.shiftYB - seg*this.shiftYB);
 	}
-	//snowflake
-	if (i % 300 == 0) {
-		context.moveTo
-	}
-	//context.strokeStyle = this.blacks[3];
 
 	context.stroke();
 	context.restore();
+}
+
+function Walls (room) {
+	this.room = room;
+	this.color1 = "white";
+	this.color2 = "#EDEDED";
+	this.color3 = "#344152";
+}
+Walls.prototype.draw = function () {
+//GRADIENT
+	//top
+	var grd=this.room.context.createLinearGradient(0,0,0,(this.room.height/2)*this.room.shiftY);
+	grd.addColorStop(.8,this.color1);
+	grd.addColorStop(0,this.color3);
+	grd.addColorStop(.6, this.color2);
+	var top=[0,0, this.room.width,0, (this.room.width/2)*this.room.shiftX,(this.room.height/2)*this.room.shiftY];
+	this.room.context.fillStyle = grd;
+	this.room.context.beginPath();
+	this.room.context.moveTo(top[0], top[1]);
+	for( item=2 ; item < top.length-1 ; item+=2 ){this.room.context.lineTo( top[item] , top[item+1] )}
+	this.room.context.closePath();
+	this.room.context.fill();
+
+	//left
+	grd=this.room.context.createLinearGradient(0,(this.room.height/2)*this.room.shiftY,(this.room.width/2)*this.room.shiftX,(this.room.height/2)*this.room.shiftY);
+	grd.addColorStop(.8,this.color1);
+	grd.addColorStop(0,this.color3);
+	grd.addColorStop(.6, this.color2);
+	this.room.context.fillStyle = grd;
+	this.room.context.beginPath();
+	var left=[0,0, (this.room.width/2)*this.room.shiftX,(this.room.height/2)*this.room.shiftY, 0,this.room.height];
+	this.room.context.moveTo(left[0], left[1]);
+	for( item=2 ; item < left.length-1 ; item+=2 ){this.room.context.lineTo( left[item] , left[item+1] )}
+	this.room.context.closePath();
+	this.room.context.fill();
+
+
+	//bottom
+	grd=this.room.context.createLinearGradient(0,(this.room.height/2)*this.room.shiftY,0,this.room.height);
+	grd.addColorStop(.2,this.color1);
+	grd.addColorStop(1,this.color3);
+	grd.addColorStop(.4, this.color2);
+	this.room.context.fillStyle = grd;
+	this.room.context.beginPath();
+	var bottom=[0,this.room.height, (this.room.width/2)*this.room.shiftX,(this.room.height/2)*this.room.shiftY, this.room.width,this.room.height];
+	this.room.context.moveTo(bottom[0], bottom[1]);
+	for( item=2 ; item < bottom.length-1 ; item+=2 ){this.room.context.lineTo( bottom[item] , bottom[item+1] )}
+	this.room.context.closePath();
+	this.room.context.fill();
+
+	//right
+	grd=this.room.context.createLinearGradient((this.room.width/2)*this.room.shiftX,0,this.room.width,0);
+	grd.addColorStop(.2,this.color1);
+	grd.addColorStop(1,this.color3);
+	grd.addColorStop(.4, this.color2);
+	this.room.context.beginPath();
+	var right=[this.room.width,this.room.height, (this.room.width/2)*this.room.shiftX,(this.room.height/2)*this.room.shiftY, this.room.width,0];
+	this.room.context.moveTo(right[0], right[1]);
+	for( item=2 ; item < right.length-1 ; item+=2 ){this.room.context.lineTo( right[item] , right[item+1] )}
+	this.room.context.closePath();
+	this.room.context.fillStyle = grd;
+	this.room.context.fill();
+
 }
 
 
@@ -179,7 +180,6 @@ function SnowFlake (x, y, width, height, size) {
 	this.color = colors[Math.floor(Math.random()*colors.length)];
 	this.lineWidth = 3;
 
-
 	this.dx = Math.abs(x - (width/2));
 	this.dxu = x - width/2;
 	this.dy = Math.abs(y - height/2);
@@ -194,7 +194,7 @@ function SnowFlake (x, y, width, height, size) {
 		this.yScale = this.dy/this.dx;
 	}
 
-	this.trails = [];
+/*	this.trails = [];
 	for (var i = 1; i < Math.random()*10; i++) {
 		if(this.dxu < 0 && this.dyu < 0){
 			this.trails.push(new SnowFlakeTrails(this.x - (i*this.delay*(this.dx/(width/2))), this.y - (i*(this.delay*(this.dy/(height/2)))), width, this.rate));
@@ -208,7 +208,7 @@ function SnowFlake (x, y, width, height, size) {
 		else if(this.dxu > 0 && this.dyu > 0){
 			this.trails.push(new SnowFlakeTrails(this.x + (i*this.delay*(this.dx/(width/2))), this.y + (i*(this.delay*(this.dy/(height/2)))), width, this.rate));
 		}
-	}
+	}*/
 
 }
 SnowFlake.prototype.draw = function (context, frame, width, height, shiftX, shiftY) {
@@ -267,7 +267,7 @@ SnowFlake.prototype.draw = function (context, frame, width, height, shiftX, shif
 
 }
 
-function SnowFlakeTrails (x, y, width, height, rate) {
+/*function SnowFlakeTrails (x, y, width, height, rate) {
 	colors = ["#FF0000", "#00FF00", "#0000FF", "#FFFF00", "#00FFFF",
 		"#FF00FF", "#C0C0C0"];
 	this.x = x - 50;
@@ -294,8 +294,8 @@ function SnowFlakeTrails (x, y, width, height, rate) {
 SnowFlakeTrails.prototype.draw = function (context, frame, width, height) {
 	
 	context.save();
-/*	context.translate(this.x, this.y);
-	context.rotate(Math.PI*z);*/
+	context.translate(this.x, this.y);
+	context.rotate(Math.PI*z);
 	context.lineWidth = this.lineWidth;
 	context.beginPath();
 	
@@ -327,4 +327,4 @@ SnowFlakeTrails.prototype.draw = function (context, frame, width, height) {
 		this.y += 1/this.xScale*rate;
 	}
 
-}
+}*/
