@@ -1,0 +1,150 @@
+html {
+    	background-color:#000000;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor:default;
+
+}
+
+p{
+	text-align:center;
+    	border-radius:5px;
+    	display: inline-block;
+}
+
+body {
+	position:absolute;
+}
+
+div {
+	width:900px;
+}
+
+img {
+	position: absolute;
+	left:0;
+	width:900px;
+	height:150px;
+}
+
+x {
+	position:absolute;
+	top:10px;
+	left:270px;
+	background: #c10d0d;
+	border: 2px solid #f95454;
+	width:15px;
+	height:15px;
+	border-radius:100%;
+	opacity:0.5;
+}
+
+.submit {
+	position:absolute;
+	top:130px;
+	left:210px;
+	background: #3ba036;
+	border: 2px solid #7eed78;
+	width:65px;
+	height:20px;
+	border-radius:5px;
+	text-align:center;
+	opacity:0.5;
+}
+
+.all {
+	position:absolute;
+	top:130px;
+	left:120px;
+	background: #bf7113;
+	border: 2px solid #f2a94f;
+	width:65px;
+	height:20px;
+	border-radius:5px;
+	text-align:center;
+	opacity:0.5;
+}
+
+.random {
+	position:absolute;
+	top:130px;
+	left:20px;
+	background: #c10d0d;
+	border: 2px solid #f95454;
+	width:75px;
+	height:20px;
+	border-radius:5px;
+	text-align:center;
+	opacity:0.5;
+}
+
+.one {
+   	background-color: #C3C3E5;
+}
+
+.two {
+    	background-color: #F1F0FF;
+}
+
+.three{ 
+    	background-color: #443266;
+}
+
+.colSel {
+	width:75px;
+	height:75px;
+	border-radius:5px;
+	top:5px;
+	left:20px;
+    	position:relative;
+	margin:0 0 5px 5px;
+	opacity:0.5;
+}
+
+#foot {
+	bottom:0;
+}
+#background {
+	position:fixed;
+	z-index:0;
+}	
+
+#foreground {
+	text-align:center;
+	background-color: #FFFFFF;
+	position:inherit;
+	z-index:1;
+	height:1500px;
+	top:-8px;
+	opacity:0;
+}
+
+#colorSelector {
+	width:300px;
+	height:180px;
+	position:fixed;
+	background-color:#222222;
+	z-index:1;
+	border-radius:15px;
+	border:3px solid #777;
+	opacity:1;
+}
+
+
+
+
+
+sel {
+	text-align:center;
+	font:sans-serif;
+	color:#DDD;
+	font-size:20px;
+	display:block;
+	padding:0px;
+	margin:5px 0px 0px 0px;
+	
+}
